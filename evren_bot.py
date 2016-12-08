@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import datetime
 import time
 import random
 import requests
@@ -32,8 +33,19 @@ def wait_random_time_between(minutes_min, minutes_max):
 def main():
     wait_random_time_between(1, 9)
 
-    message = build_message(PHRASE_SETS)
+    try:
+        if datetime.datetime.today().day % 9 == 0:
+            message = 'WFH today'
+            os.system("""curl -X POST --data-urlencode 'payload={{"channel": "#sd", "username": "evren-bot", "text": "{message}", "icon_emoji": ":whale2:"}}' {hook_url}""".format(
+                message=message,
+                hook_url=os.environ['SLACK_HOOK_URL'],
+            ))
+            time.sleep(120)
+    except:
+        # stupid error handling to make sure nobody forgets to buy lunch
+        pass
 
+    message = build_message(PHRASE_SETS)
     print message
 
     os.system("""curl -X POST --data-urlencode 'payload={{"channel": "#sd", "username": "evren-bot", "text": "{message}", "icon_emoji": ":whale2:"}}' {hook_url}""".format(
